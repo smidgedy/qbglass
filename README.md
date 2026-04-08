@@ -38,7 +38,7 @@ A glassmorphism dark theme for qBittorrent's Web UI. Responsive desktop and mobi
 Requires Node.js 18+.
 
 ```sh
-git clone https://github.com/smidge/qbglass.git
+git clone https://github.com/smidgedy/qbglass.git
 cd qbglass
 npm install --legacy-peer-deps
 npm run build
