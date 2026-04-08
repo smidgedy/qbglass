@@ -2,6 +2,8 @@
 
 A glassmorphism dark theme for qBittorrent's Web UI. Responsive desktop and mobile layouts with *arr stack awareness.
 
+To be really clear - this is vibe coded with Claude Code. I made it because I like to check in on QB from mobile and the default Web UI sucks for this.
+
 ![Desktop](screenshots/desktop.png)
 
 <p float="left">
