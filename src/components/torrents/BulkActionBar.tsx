@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Play, Pause, Trash2, RotateCw, X, CheckSquare, Square } from 'lucide-react'
+import { Play, Pause, Trash2, RotateCw, X, CheckSquare, Square, ChevronUp, ChevronDown, ChevronsUp, ChevronsDown } from 'lucide-react'
 import { useTorrentStore } from '../../store/useTorrentStore'
-import { pauseTorrents, resumeTorrents, deleteTorrents, recheckTorrents } from '../../api/torrents'
+import { pauseTorrents, resumeTorrents, deleteTorrents, recheckTorrents, topPrio, bottomPrio, increasePrio, decreasePrio } from '../../api/torrents'
 import { useFilteredTorrents } from '../../store/selectors'
 import { useToast } from '../shared/Toast'
 
@@ -23,6 +23,10 @@ export function BulkActionBar() {
   const handleResume = async () => { await resumeTorrents(hashes); toast(`${count} torrent${s} resumed`); clearSelection() }
   const handlePause = async () => { await pauseTorrents(hashes); toast(`${count} torrent${s} paused`); clearSelection() }
   const handleRecheck = async () => { await recheckTorrents(hashes); toast(`Rechecking ${count} torrent${s}`); clearSelection() }
+  const handleMoveTop = async () => { await topPrio(hashes); toast(`Moved to top of queue`) }
+  const handleMoveUp = async () => { await increasePrio(hashes); toast(`Moved up in queue`) }
+  const handleMoveDown = async () => { await decreasePrio(hashes); toast(`Moved down in queue`) }
+  const handleMoveBottom = async () => { await bottomPrio(hashes); toast(`Moved to bottom of queue`) }
   const handleDelete = async (withFiles: boolean) => {
     await deleteTorrents(hashes, withFiles)
     toast(`${count} torrent${s} deleted`)
@@ -58,6 +62,23 @@ export function BulkActionBar() {
       <button onClick={handleRecheck} className={`${btnClass} bg-accent-blue/15 text-accent-blue hover:bg-accent-blue/25`}>
         <RotateCw size={13} /> Recheck
       </button>
+
+      <div className="w-px h-5 bg-glass-border" />
+
+      <div className="flex items-center gap-1">
+        <button onClick={handleMoveTop} className={`p-1.5 rounded-lg text-text-muted hover:text-accent-purple hover:bg-accent-purple/15 transition-all active:scale-90`} title="Move to top">
+          <ChevronsUp size={15} />
+        </button>
+        <button onClick={handleMoveUp} className={`p-1.5 rounded-lg text-text-muted hover:text-accent-purple hover:bg-accent-purple/15 transition-all active:scale-90`} title="Move up">
+          <ChevronUp size={15} />
+        </button>
+        <button onClick={handleMoveDown} className={`p-1.5 rounded-lg text-text-muted hover:text-accent-purple hover:bg-accent-purple/15 transition-all active:scale-90`} title="Move down">
+          <ChevronDown size={15} />
+        </button>
+        <button onClick={handleMoveBottom} className={`p-1.5 rounded-lg text-text-muted hover:text-accent-purple hover:bg-accent-purple/15 transition-all active:scale-90`} title="Move to bottom">
+          <ChevronsDown size={15} />
+        </button>
+      </div>
 
       {!confirmDelete ? (
         <button onClick={() => setConfirmDelete(true)} className={`${btnClass} bg-accent-red/15 text-accent-red hover:bg-accent-red/25`}>

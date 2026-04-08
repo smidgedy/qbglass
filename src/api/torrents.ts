@@ -46,6 +46,22 @@ export async function setForceStart(hashes: string[], value: boolean): Promise<v
   await apiPost('/torrents/setForceStart', { hashes: hashes.join('|'), value: String(value) })
 }
 
+export async function topPrio(hashes: string[]): Promise<void> {
+  await apiPost('/torrents/topPrio', { hashes: hashes.join('|') })
+}
+
+export async function bottomPrio(hashes: string[]): Promise<void> {
+  await apiPost('/torrents/bottomPrio', { hashes: hashes.join('|') })
+}
+
+export async function increasePrio(hashes: string[]): Promise<void> {
+  await apiPost('/torrents/increasePrio', { hashes: hashes.join('|') })
+}
+
+export async function decreasePrio(hashes: string[]): Promise<void> {
+  await apiPost('/torrents/decreasePrio', { hashes: hashes.join('|') })
+}
+
 export async function getTorrentFiles(hash: string): Promise<TorrentFile[]> {
   return apiGet<TorrentFile[]>('/torrents/files', { hash })
 }

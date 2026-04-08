@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
-import { Pause, Play, Trash2, RotateCw, Zap } from 'lucide-react'
+import { Pause, Play, Trash2, RotateCw, Zap, ChevronUp, ChevronDown, ChevronsUp, ChevronsDown } from 'lucide-react'
 import type { Torrent, TorrentFile, TorrentTracker } from '../../api/types'
 import { ProgressBar } from './ProgressBar'
 import { formatSpeed, formatSize, formatETA, formatProgress, formatRatio } from '../../utils/format'
 import { stateToLabel, canResume } from '../../utils/torrentState'
-import { pauseTorrents, resumeTorrents, deleteTorrents, recheckTorrents, setForceStart, getTorrentFiles, getTorrentTrackers } from '../../api/torrents'
+import { pauseTorrents, resumeTorrents, deleteTorrents, recheckTorrents, setForceStart, getTorrentFiles, getTorrentTrackers, topPrio, bottomPrio, increasePrio, decreasePrio } from '../../api/torrents'
 import { useToast } from '../shared/Toast'
 
 type Tab = 'overview' | 'files' | 'trackers'
@@ -46,11 +46,16 @@ export function useDetailActions(torrent: Torrent, onClose: () => void) {
     toast(torrent.force_start ? 'Force start disabled' : 'Force start enabled')
   }
 
-  return { resumable, confirmDelete, setConfirmDelete, handlePauseResume, handleDelete, handleRecheck, handleForceStart }
+  const handleMoveTop = async () => { await topPrio([torrent.hash]); toast('Moved to top of queue') }
+  const handleMoveUp = async () => { await increasePrio([torrent.hash]); toast('Moved up in queue') }
+  const handleMoveDown = async () => { await decreasePrio([torrent.hash]); toast('Moved down in queue') }
+  const handleMoveBottom = async () => { await bottomPrio([torrent.hash]); toast('Moved to bottom of queue') }
+
+  return { resumable, confirmDelete, setConfirmDelete, handlePauseResume, handleDelete, handleRecheck, handleForceStart, handleMoveTop, handleMoveUp, handleMoveDown, handleMoveBottom }
 }
 
 export function DetailActions({ torrent, onClose }: DetailTabsProps) {
-  const { resumable, confirmDelete, setConfirmDelete, handlePauseResume, handleDelete, handleRecheck, handleForceStart } = useDetailActions(torrent, onClose)
+  const { resumable, confirmDelete, setConfirmDelete, handlePauseResume, handleDelete, handleRecheck, handleForceStart, handleMoveTop, handleMoveUp, handleMoveDown, handleMoveBottom } = useDetailActions(torrent, onClose)
 
   return (
     <div className="px-4 py-2 flex gap-2 border-b border-glass-border shrink-0 flex-wrap" role="toolbar" aria-label="Torrent actions">
@@ -67,6 +72,21 @@ export function DetailActions({ torrent, onClose }: DetailTabsProps) {
         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-accent-purple/15 text-accent-purple hover:bg-accent-purple/25 transition-all active:scale-95">
         <Zap size={13} /> {torrent.force_start ? 'Unforce' : 'Force'}
       </button>
+      <div className="w-px h-5 bg-glass-border" />
+      <div className="flex items-center gap-0.5">
+        <button onClick={handleMoveTop} className="p-1.5 rounded-lg text-text-muted hover:text-accent-purple hover:bg-accent-purple/15 transition-all active:scale-90" title="Move to top">
+          <ChevronsUp size={14} />
+        </button>
+        <button onClick={handleMoveUp} className="p-1.5 rounded-lg text-text-muted hover:text-accent-purple hover:bg-accent-purple/15 transition-all active:scale-90" title="Move up">
+          <ChevronUp size={14} />
+        </button>
+        <button onClick={handleMoveDown} className="p-1.5 rounded-lg text-text-muted hover:text-accent-purple hover:bg-accent-purple/15 transition-all active:scale-90" title="Move down">
+          <ChevronDown size={14} />
+        </button>
+        <button onClick={handleMoveBottom} className="p-1.5 rounded-lg text-text-muted hover:text-accent-purple hover:bg-accent-purple/15 transition-all active:scale-90" title="Move to bottom">
+          <ChevronsDown size={14} />
+        </button>
+      </div>
       {!confirmDelete ? (
         <button onClick={() => setConfirmDelete(true)}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-accent-red/15 text-accent-red hover:bg-accent-red/25 transition-all active:scale-95">
@@ -127,6 +147,7 @@ export function DetailTabContent({ torrent, tab }: { torrent: Torrent; tab: Tab 
 
 function OverviewTab({ torrent: t }: { torrent: Torrent }) {
   const rows: [string, string][] = [
+    ['Queue Position', t.priority > 0 ? String(t.priority) : 'N/A'],
     ['Progress', formatProgress(t.progress)],
     ['Size', formatSize(t.total_size)],
     ['Downloaded', formatSize(t.downloaded)],

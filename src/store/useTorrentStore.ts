@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import type { Torrent, Category, ServerState, MainDataResponse } from '../api/types'
 
 export type FilterState = 'active' | 'downloading' | 'seeding' | 'completed' | 'stalled' | 'metadata' | 'queued' | 'all'
-export type SortField = 'name' | 'size' | 'progress' | 'speed' | 'eta' | 'ratio' | 'added' | 'state'
+export type SortField = 'name' | 'size' | 'progress' | 'speed' | 'eta' | 'ratio' | 'added' | 'state' | 'priority'
 export type SortDir = 'asc' | 'desc'
 
 interface TorrentStore {
@@ -21,6 +21,7 @@ interface TorrentStore {
   sortDir: SortDir
   dlSpeedHistory: number[]
   ulSpeedHistory: number[]
+  connectionLost: boolean
 
   setAuthenticated: (v: boolean) => void
   applyMainDataDelta: (delta: MainDataResponse) => void
@@ -32,6 +33,7 @@ interface TorrentStore {
   setCategoryFilter: (c: string | null) => void
   setSearchQuery: (q: string) => void
   setSort: (field: SortField) => void
+  setConnectionLost: (v: boolean) => void
 }
 
 export const useTorrentStore = create<TorrentStore>((set) => ({
@@ -50,8 +52,10 @@ export const useTorrentStore = create<TorrentStore>((set) => ({
   sortDir: 'asc',
   dlSpeedHistory: [],
   ulSpeedHistory: [],
+  connectionLost: false,
 
   setAuthenticated: (v) => set({ authenticated: v }),
+  setConnectionLost: (v) => set({ connectionLost: v }),
 
   applyMainDataDelta: (delta) =>
     set((state) => {

@@ -18,6 +18,7 @@ function getSortValue(t: Torrent, field: SortField): number | string {
     case 'ratio': return t.ratio
     case 'added': return t.added_on
     case 'state': return t.state
+    case 'priority': return t.priority
   }
 }
 

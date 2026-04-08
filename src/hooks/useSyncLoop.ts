@@ -3,11 +3,13 @@ import { useTorrentStore } from '../store/useTorrentStore'
 import { fetchMainData } from '../api/sync'
 
 const MAX_HISTORY = 60
+const FAIL_THRESHOLD = 3
 
 export function useSyncLoop() {
   const authenticated = useTorrentStore((s) => s.authenticated)
   const applyMainDataDelta = useTorrentStore((s) => s.applyMainDataDelta)
   const ridRef = useRef(0)
+  const failCountRef = useRef(0)
 
   useEffect(() => {
     if (!authenticated) return
@@ -22,6 +24,12 @@ export function useSyncLoop() {
         if (cancelled) return
         ridRef.current = data.rid
         applyMainDataDelta(data)
+
+        // Connection restored
+        if (failCountRef.current >= FAIL_THRESHOLD) {
+          useTorrentStore.getState().setConnectionLost(false)
+        }
+        failCountRef.current = 0
 
         // Record speed history
         const state = useTorrentStore.getState()
@@ -39,13 +47,19 @@ export function useSyncLoop() {
           useTorrentStore.getState().setAuthenticated(false)
           return
         }
+        failCountRef.current++
+        if (failCountRef.current >= FAIL_THRESHOLD) {
+          useTorrentStore.getState().setConnectionLost(true)
+        }
       }
       if (!cancelled) {
-        const torrents = useTorrentStore.getState().torrents
-        const hasActive = Object.values(torrents).some(
+        const state = useTorrentStore.getState()
+        const hasActive = Object.values(state.torrents).some(
           (t) => t.dlspeed > 0 || t.upspeed > 0,
         )
-        timeoutId = window.setTimeout(poll, hasActive ? 2000 : 8000)
+        // Poll faster when connection is lost to detect recovery quickly
+        const interval = state.connectionLost ? 3000 : hasActive ? 2000 : 8000
+        timeoutId = window.setTimeout(poll, interval)
       }
     }
 

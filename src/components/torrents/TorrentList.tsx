@@ -7,6 +7,7 @@ import { useTorrentStore, type SortField } from '../../store/useTorrentStore'
 import { TorrentRow } from './TorrentRow'
 
 const COLUMNS: { field: SortField; label: string; className: string }[] = [
+  { field: 'priority', label: '#', className: 'w-8 text-right justify-end' },
   { field: 'name', label: 'Name', className: 'flex-1 min-w-0' },
   { field: 'progress', label: 'Progress', className: 'w-16 text-right justify-end' },
   { field: 'speed', label: 'Speed', className: 'w-24 text-right justify-end' },
@@ -56,7 +57,7 @@ export function TorrentList() {
       <div className="px-4 py-2 flex items-center gap-3 border-b border-glass-border shrink-0">
         {/* Checkbox spacer */}
         <div className="w-5 shrink-0" />
-        {/* Category spacer */}
+        {/* Category badge spacer */}
         <div className="w-[13px] shrink-0" />
 
         {COLUMNS.map((col) => (

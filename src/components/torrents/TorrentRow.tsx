@@ -64,6 +64,13 @@ export function TorrentRow({ torrent, style }: TorrentRowProps) {
       {/* Category icon */}
       <CategoryBadge category={t.category} />
 
+      {/* Queue position */}
+      <div className="w-8 text-right shrink-0">
+        <span className="text-[11px] font-mono text-text-muted tabular-nums">
+          {t.priority > 0 ? t.priority : '*'}
+        </span>
+      </div>
+
       {/* Name + progress */}
       <div className="flex-1 min-w-0">
         <div className="text-sm font-medium truncate" title={t.name}>{t.name}</div>

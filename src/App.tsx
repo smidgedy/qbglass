@@ -8,6 +8,7 @@ import { LoginPage } from './components/auth/LoginPage'
 import { DesktopLayout } from './components/layout/DesktopLayout'
 import { MobileLayout } from './components/layout/MobileLayout'
 import { ToastProvider } from './components/shared/Toast'
+import { ConnectionLostOverlay } from './components/shared/ConnectionLostOverlay'
 
 const ThemeContext = createContext<ReturnType<typeof useTheme> | null>(null)
 export function useThemeContext() {
@@ -52,6 +53,7 @@ export default function App() {
         ) : (
           <SyncProvider>
             {isMobile ? <MobileLayout /> : <DesktopLayout />}
+            <ConnectionLostOverlay />
           </SyncProvider>
         )}
       </ToastProvider>
