@@ -15,7 +15,8 @@ export function TorrentDetail() {
 
   return (
     <div
-      className="w-96 h-full glass-panel-flat rounded-none border-y-0 border-r-0 flex flex-col shrink-0 overflow-hidden animate-slide-in-right"
+      className="w-96 h-full rounded-none border-l border-glass-border flex flex-col shrink-0 overflow-hidden animate-slide-in-right"
+      style={{ background: 'var(--color-surface-solid)', backdropFilter: 'blur(24px) saturate(1.2)' }}
       role="dialog" aria-label="Torrent details"
     >
       {/* Header */}
