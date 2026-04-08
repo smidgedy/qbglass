@@ -3,7 +3,7 @@ import { Pause, Play, Trash2, RotateCw, Zap } from 'lucide-react'
 import type { Torrent, TorrentFile, TorrentTracker } from '../../api/types'
 import { ProgressBar } from './ProgressBar'
 import { formatSpeed, formatSize, formatETA, formatProgress, formatRatio } from '../../utils/format'
-import { stateToLabel, stateToColor, canResume } from '../../utils/torrentState'
+import { stateToLabel, canResume } from '../../utils/torrentState'
 import { pauseTorrents, resumeTorrents, deleteTorrents, recheckTorrents, setForceStart, getTorrentFiles, getTorrentTrackers } from '../../api/torrents'
 import { useToast } from '../shared/Toast'
 
