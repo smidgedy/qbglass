@@ -26,7 +26,7 @@ export function ProgressBar({ progress, state, className }: ProgressBarProps) {
       >
         {isActive && (
           <div
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
             style={{ animation: 'shimmer 2s infinite' }}
           />
         )}

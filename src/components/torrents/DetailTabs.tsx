@@ -55,35 +55,35 @@ export function DetailActions({ torrent, onClose }: DetailTabsProps) {
   return (
     <div className="px-4 py-2 flex gap-2 border-b border-glass-border shrink-0 flex-wrap" role="toolbar" aria-label="Torrent actions">
       <button onClick={handlePauseResume}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-accent-blue/15 text-accent-blue hover:bg-accent-blue/25 active:bg-accent-blue/30 transition-colors">
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-accent-blue/15 text-accent-blue hover:bg-accent-blue/25 active:bg-accent-blue/30 transition-all active:scale-95">
         {resumable ? <Play size={13} /> : <Pause size={13} />}
         {resumable ? 'Resume' : 'Pause'}
       </button>
       <button onClick={handleRecheck}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-accent-amber/15 text-accent-amber hover:bg-accent-amber/25 transition-colors">
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-accent-amber/15 text-accent-amber hover:bg-accent-amber/25 transition-all active:scale-95">
         <RotateCw size={13} /> Recheck
       </button>
       <button onClick={handleForceStart}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-accent-purple/15 text-accent-purple hover:bg-accent-purple/25 transition-colors">
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-accent-purple/15 text-accent-purple hover:bg-accent-purple/25 transition-all active:scale-95">
         <Zap size={13} /> {torrent.force_start ? 'Unforce' : 'Force'}
       </button>
       {!confirmDelete ? (
         <button onClick={() => setConfirmDelete(true)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-accent-red/15 text-accent-red hover:bg-accent-red/25 transition-colors">
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-accent-red/15 text-accent-red hover:bg-accent-red/25 transition-all active:scale-95">
           <Trash2 size={13} /> Delete
         </button>
       ) : (
         <>
           <button onClick={() => handleDelete(false)}
-            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-accent-amber/15 text-accent-amber hover:bg-accent-amber/25 transition-colors">
+            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-accent-amber/15 text-accent-amber hover:bg-accent-amber/25 transition-all active:scale-95">
             Torrent only
           </button>
           <button onClick={() => handleDelete(true)}
-            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-accent-red/15 text-accent-red hover:bg-accent-red/25 transition-colors">
+            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-accent-red/15 text-accent-red hover:bg-accent-red/25 transition-all active:scale-95">
             + Files
           </button>
           <button onClick={() => setConfirmDelete(false)}
-            className="px-3 py-1.5 rounded-lg text-xs font-medium text-text-muted hover:bg-white/5 transition-colors">
+            className="px-3 py-1.5 rounded-lg text-xs font-medium text-text-muted hover:bg-white/5 transition-all active:scale-95">
             Cancel
           </button>
         </>
@@ -98,8 +98,8 @@ export function DetailTabBar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => vo
       {(['overview', 'files', 'trackers'] as Tab[]).map((t) => (
         <button key={t} onClick={() => setTab(t)}
           role="tab" aria-selected={tab === t}
-          className={`flex-1 py-2 text-xs font-medium capitalize transition-colors
-            ${tab === t ? 'text-text-primary border-b-2 border-accent-blue' : 'text-text-muted hover:text-text-secondary'}`}>
+          className={`flex-1 py-2 text-xs font-medium capitalize transition-all duration-200 border-b-2
+            ${tab === t ? 'text-text-primary border-accent-blue' : 'text-text-muted border-transparent hover:text-text-secondary'}`}>
           {t}
         </button>
       ))}
@@ -155,8 +155,21 @@ function OverviewTab({ torrent: t }: { torrent: Torrent }) {
   )
 }
 
+function Skeleton() {
+  return (
+    <div className="flex flex-col gap-3">
+      {[...Array(5)].map((_, i) => (
+        <div key={i} className="flex flex-col gap-1.5 animate-pulse">
+          <div className="h-3 bg-white/5 rounded w-3/4" />
+          <div className="h-1.5 bg-white/5 rounded w-full" />
+        </div>
+      ))}
+    </div>
+  )
+}
+
 function FilesTab({ files }: { files: TorrentFile[] }) {
-  if (files.length === 0) return <p className="text-xs text-text-muted">Loading files...</p>
+  if (files.length === 0) return <Skeleton />
   return (
     <div className="flex flex-col gap-2">
       {files.map((f) => (
@@ -178,7 +191,7 @@ const trackerStatusColor = (s: number) =>
   s === 2 ? 'text-accent-green' : s === 4 ? 'text-accent-red' : 'text-text-muted'
 
 function TrackersTab({ trackers }: { trackers: TorrentTracker[] }) {
-  if (trackers.length === 0) return <p className="text-xs text-text-muted">Loading trackers...</p>
+  if (trackers.length === 0) return <Skeleton />
   return (
     <div className="flex flex-col gap-2">
       {trackers.filter((t) => t.url.startsWith('http') || t.url.startsWith('udp')).map((t, i) => (

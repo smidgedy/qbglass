@@ -44,18 +44,18 @@ export function TorrentRow({ torrent, style }: TorrentRowProps) {
       style={style}
       onClick={handleClick}
       className={clsx(
-        'h-16 px-4 flex items-center gap-3 border-b border-white/5 cursor-pointer transition-colors',
-        isChecked ? 'bg-accent-blue/10' : isDetailSelected ? 'bg-white/10' : 'hover:bg-white/5',
+        'h-16 px-4 flex items-center gap-3 border-b border-white/5 cursor-pointer transition-all duration-150',
+        isChecked ? 'bg-accent-blue/10' : isDetailSelected ? 'bg-white/10' : 'hover:bg-white/[0.07]',
       )}
     >
       {/* Checkbox */}
       <div
         onClick={handleCheckboxClick}
         className={clsx(
-          'w-5 h-5 rounded border flex items-center justify-center shrink-0 transition-colors',
+          'w-5 h-5 rounded border flex items-center justify-center shrink-0 transition-all duration-150',
           isChecked
-            ? 'bg-accent-blue border-accent-blue'
-            : 'border-white/20 hover:border-white/40',
+            ? 'bg-accent-blue border-accent-blue scale-110'
+            : 'border-white/20 hover:border-white/40 hover:scale-110',
         )}
       >
         {isChecked && <Check size={13} strokeWidth={3} className="text-white" />}
@@ -66,10 +66,10 @@ export function TorrentRow({ torrent, style }: TorrentRowProps) {
 
       {/* Name + progress */}
       <div className="flex-1 min-w-0">
-        <div className="text-sm font-medium truncate">{t.name}</div>
+        <div className="text-sm font-medium truncate" title={t.name}>{t.name}</div>
         <div className="flex items-center gap-3 mt-1">
           <ProgressBar progress={t.progress} state={t.state} className="flex-1" />
-          <span className="text-[11px] font-mono text-text-muted w-12 text-right shrink-0">
+          <span className="text-[11px] font-mono text-text-muted w-12 text-right shrink-0 tabular-nums">
             {formatProgress(t.progress)}
           </span>
         </div>
@@ -78,21 +78,21 @@ export function TorrentRow({ torrent, style }: TorrentRowProps) {
       {/* Speed / State */}
       <div className="w-24 text-right shrink-0">
         {hasDownSpeed ? (
-          <div className="text-xs font-mono text-accent-blue">{formatSpeed(t.dlspeed)}</div>
+          <div className="text-xs font-mono text-accent-blue tabular-nums">{formatSpeed(t.dlspeed)}</div>
         ) : hasUpSpeed ? (
-          <div className="text-xs font-mono text-accent-green">{formatSpeed(t.upspeed)}</div>
+          <div className="text-xs font-mono text-accent-green tabular-nums">{formatSpeed(t.upspeed)}</div>
         ) : (
           <div className={clsx('text-xs', stateToColor(t.state))}>{stateToLabel(t.state)}</div>
         )}
         {hasDownSpeed && hasUpSpeed && (
-          <div className="text-[10px] font-mono text-accent-green mt-0.5">{formatSpeed(t.upspeed)}</div>
+          <div className="text-[10px] font-mono text-accent-green mt-0.5 tabular-nums">{formatSpeed(t.upspeed)}</div>
         )}
       </div>
 
       {/* Size */}
       <div className="w-20 text-right shrink-0">
-        <div className="text-xs font-mono text-text-secondary">{formatSize(t.size)}</div>
-        <div className="text-[10px] font-mono text-text-muted mt-0.5">
+        <div className="text-xs font-mono text-text-secondary tabular-nums">{formatSize(t.size)}</div>
+        <div className="text-[10px] font-mono text-text-muted mt-0.5 tabular-nums">
           R: {t.ratio.toFixed(2)}
         </div>
       </div>
@@ -100,7 +100,7 @@ export function TorrentRow({ torrent, style }: TorrentRowProps) {
       {/* ETA */}
       <div className="w-16 text-right shrink-0">
         {isDownloading(t.state) && t.eta > 0 && t.eta < 8640000 ? (
-          <div className="text-xs font-mono text-text-secondary">{formatETA(t.eta)}</div>
+          <div className="text-xs font-mono text-text-secondary tabular-nums">{formatETA(t.eta)}</div>
         ) : (
           <div className="text-xs font-mono text-text-muted">&mdash;</div>
         )}

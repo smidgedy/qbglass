@@ -65,8 +65,10 @@ export function TorrentList() {
       </div>
 
       {torrents.length === 0 ? (
-        <div className="flex-1 flex items-center justify-center text-text-muted text-sm">
-          No torrents match the current filter
+        <div className="flex-1 flex flex-col items-center justify-center py-16">
+          <div className="text-text-muted/40 text-4xl mb-3">~</div>
+          <div className="text-text-secondary text-sm font-medium mb-1">No torrents found</div>
+          <div className="text-text-muted text-xs">Try adjusting your filters or search</div>
         </div>
       ) : (
         <div ref={parentRef} className="flex-1 overflow-y-auto">

@@ -32,7 +32,7 @@ export function MobileLayout() {
             key={t.value}
             onClick={() => setTab(t.value)}
             className={clsx(
-              'flex-1 flex flex-col items-center gap-1 py-2 transition-colors',
+              'flex-1 flex flex-col items-center gap-1 py-2 transition-all duration-150 active:scale-90',
               tab === t.value ? 'text-accent-blue' : 'text-text-secondary',
             )}
           >

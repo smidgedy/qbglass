@@ -37,8 +37,9 @@ export default function App() {
 
   if (checking) {
     return (
-      <div className="h-screen flex items-center justify-center">
-        <div className="text-text-secondary text-sm">Connecting...</div>
+      <div className="h-screen flex flex-col items-center justify-center gap-3">
+        <div className="w-6 h-6 border-2 border-white/20 border-t-accent-blue rounded-full animate-spin" />
+        <div className="text-text-muted text-xs">Connecting...</div>
       </div>
     )
   }
