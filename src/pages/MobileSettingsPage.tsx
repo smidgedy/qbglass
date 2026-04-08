@@ -32,7 +32,7 @@ export function MobileSettingsPage() {
             <Gauge size={18} className={altSpeed ? 'text-accent-amber' : 'text-text-muted'} />
             <span className="text-sm">Alternative Speed Limits</span>
           </div>
-          <div className={`w-10 h-6 rounded-full transition-colors ${altSpeed ? 'bg-accent-amber' : 'bg-white/10'} flex items-center`}>
+          <div role="switch" aria-checked={altSpeed} aria-label="Alternative speed limits" className={`w-10 h-6 rounded-full transition-colors ${altSpeed ? 'bg-accent-amber' : 'bg-white/10'} flex items-center`}>
             <div className={`w-4 h-4 rounded-full bg-white transition-transform mx-1 ${altSpeed ? 'translate-x-4' : ''}`} />
           </div>
         </button>

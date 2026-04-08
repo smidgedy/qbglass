@@ -3,6 +3,7 @@ import { Play, Pause, Trash2, X, CheckSquare } from 'lucide-react'
 import { useTorrentStore } from '../../store/useTorrentStore'
 import { pauseTorrents, resumeTorrents, deleteTorrents } from '../../api/torrents'
 import { useFilteredTorrents } from '../../store/selectors'
+import { useToast } from '../shared/Toast'
 
 export function BulkActionBar() {
   const selectedHashes = useTorrentStore((s) => s.selectedHashes)
@@ -10,15 +11,17 @@ export function BulkActionBar() {
   const selectAll = useTorrentStore((s) => s.selectAll)
   const filteredTorrents = useFilteredTorrents()
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const { toast } = useToast()
 
   const hashes = Object.keys(selectedHashes)
   const count = hashes.length
   if (count === 0) return null
 
-  const handleResume = async () => { await resumeTorrents(hashes); clearSelection() }
-  const handlePause = async () => { await pauseTorrents(hashes); clearSelection() }
+  const handleResume = async () => { await resumeTorrents(hashes); toast(`${count} torrent${count > 1 ? 's' : ''} resumed`); clearSelection() }
+  const handlePause = async () => { await pauseTorrents(hashes); toast(`${count} torrent${count > 1 ? 's' : ''} paused`); clearSelection() }
   const handleDelete = async (withFiles: boolean) => {
     await deleteTorrents(hashes, withFiles)
+    toast(`${count} torrent${count > 1 ? 's' : ''} deleted`)
     clearSelection()
     setConfirmDelete(false)
   }

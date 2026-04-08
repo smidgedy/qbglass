@@ -18,7 +18,7 @@ export function DesktopSettingsDialog({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose} role="dialog" aria-modal="true" aria-label="Settings">
       <div className="absolute inset-0 bg-black/50" />
       <div
         className="rounded-2xl border border-glass-border p-6 w-full max-w-lg relative z-10 flex flex-col gap-5"
@@ -44,6 +44,7 @@ export function DesktopSettingsDialog({ onClose }: { onClose: () => void }) {
             <span className="text-sm">Alternative Speed Limits</span>
           </div>
           <button
+            role="switch" aria-checked={altSpeed} aria-label="Alternative speed limits"
             onClick={() => toggleSpeedLimitsMode()}
             className={`w-10 h-6 rounded-full transition-colors ${altSpeed ? 'bg-accent-amber' : 'bg-white/10'} flex items-center`}
           >

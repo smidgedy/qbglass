@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import type { Torrent, Category, ServerState, MainDataResponse } from '../api/types'
 
-export type FilterState = 'active' | 'downloading' | 'seeding' | 'completed' | 'stalled' | 'metadata' | 'all'
+export type FilterState = 'active' | 'downloading' | 'seeding' | 'completed' | 'stalled' | 'metadata' | 'queued' | 'all'
 export type SortField = 'name' | 'size' | 'progress' | 'speed' | 'eta' | 'ratio' | 'added' | 'state'
 export type SortDir = 'asc' | 'desc'
 

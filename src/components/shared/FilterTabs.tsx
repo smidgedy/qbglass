@@ -1,17 +1,7 @@
 import { useMemo } from 'react'
 import { clsx } from 'clsx'
-import { useTorrentStore, type FilterState } from '../../store/useTorrentStore'
-import { matchesFilter } from '../../store/selectors'
-
-const FILTERS: { value: FilterState; label: string }[] = [
-  { value: 'active', label: 'Active' },
-  { value: 'downloading', label: 'Downloading' },
-  { value: 'seeding', label: 'Seeding' },
-  { value: 'completed', label: 'Completed' },
-  { value: 'stalled', label: 'Stalled' },
-  { value: 'metadata', label: 'Metadata' },
-  { value: 'all', label: 'All' },
-]
+import { useTorrentStore } from '../../store/useTorrentStore'
+import { FILTER_DEFS, matchesFilterDef, type FilterId } from '../../utils/filterDefs'
 
 export function FilterTabs() {
   const filterState = useTorrentStore((s) => s.filterState)
@@ -22,18 +12,20 @@ export function FilterTabs() {
   const counts = useMemo(() => {
     const all = Object.values(torrents)
     const result: Record<string, number> = {}
-    for (const f of FILTERS) {
-      result[f.value] = all.filter((t) => matchesFilter(t, f.value)).length
+    for (const f of FILTER_DEFS) {
+      result[f.value] = all.filter((t) => matchesFilterDef(t.state, f.value)).length
     }
     return result
   }, [torrents])
 
   return (
-    <div className="flex gap-1">
-      {FILTERS.map((f) => (
+    <div className="flex gap-1" role="tablist" aria-label="Torrent filters">
+      {FILTER_DEFS.map((f) => (
         <button
           key={f.value}
-          onClick={() => { setFilterState(f.value); setCategoryFilter(null) }}
+          role="tab"
+          aria-selected={filterState === f.value}
+          onClick={() => { setFilterState(f.value as FilterId); setCategoryFilter(null) }}
           className={clsx(
             'px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5',
             filterState === f.value

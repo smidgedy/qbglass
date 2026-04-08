@@ -28,7 +28,6 @@ export function Sidebar() {
   }
 
   const handleCategoryClick = (catName: string) => {
-    setFilterState('all')
     setCategoryFilter(categoryFilter === catName ? null : catName)
   }
 

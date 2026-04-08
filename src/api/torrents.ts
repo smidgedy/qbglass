@@ -38,6 +38,14 @@ export async function addTorrentByFile(file: File, category?: string): Promise<v
   }
 }
 
+export async function recheckTorrents(hashes: string[]): Promise<void> {
+  await apiPost('/torrents/recheck', { hashes: hashes.join('|') })
+}
+
+export async function setForceStart(hashes: string[], value: boolean): Promise<void> {
+  await apiPost('/torrents/setForceStart', { hashes: hashes.join('|'), value: String(value) })
+}
+
 export async function getTorrentFiles(hash: string): Promise<TorrentFile[]> {
   return apiGet<TorrentFile[]>('/torrents/files', { hash })
 }

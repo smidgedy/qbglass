@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { X, Link, Upload, Plus } from 'lucide-react'
 import { addTorrentByMagnet, addTorrentByFile } from '../../api/torrents'
 import { useTorrentStore } from '../../store/useTorrentStore'
+import { useToast } from '../shared/Toast'
 
 interface AddTorrentDialogProps {
   onClose: () => void
@@ -14,6 +15,7 @@ export function AddTorrentDialog({ onClose }: AddTorrentDialogProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const { toast } = useToast()
 
   const handleMagnetSubmit = async () => {
     if (!magnetUrl.trim()) return
@@ -21,6 +23,7 @@ export function AddTorrentDialog({ onClose }: AddTorrentDialogProps) {
     setError('')
     try {
       await addTorrentByMagnet(magnetUrl.trim(), category || undefined)
+      toast('Torrent added')
       onClose()
     } catch {
       setError('Failed to add torrent')
@@ -36,6 +39,7 @@ export function AddTorrentDialog({ onClose }: AddTorrentDialogProps) {
     setError('')
     try {
       await addTorrentByFile(file, category || undefined)
+      toast('Torrent file uploaded')
       onClose()
     } catch {
       setError('Failed to upload torrent')
@@ -49,7 +53,7 @@ export function AddTorrentDialog({ onClose }: AddTorrentDialogProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose} role="dialog" aria-modal="true" aria-label="Add torrent">
       <div className="absolute inset-0 bg-black/50" />
       <div
         className="rounded-2xl border border-accent-blue/20 p-6 w-full max-w-md relative z-10 flex flex-col gap-4"

@@ -1,59 +1,43 @@
 import { useRef, useMemo, useState } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
+import { Plus } from 'lucide-react'
 import { clsx } from 'clsx'
 import { useTorrentStore } from '../store/useTorrentStore'
 import { ProgressBar } from '../components/torrents/ProgressBar'
 import { CategoryBadge } from '../components/torrents/CategoryBadge'
 import { MobileTorrentDetail } from '../components/torrents/MobileTorrentDetail'
+import { AddTorrentDialog } from '../components/torrents/AddTorrentDialog'
 import { formatSpeed } from '../utils/format'
-import { stateToLabel, stateToColor } from '../utils/torrentState'
+import { stateToColor } from '../utils/torrentState'
 import { SearchBar } from '../components/shared/SearchBar'
 import { getCategoryConfig } from '../utils/categories'
-import type { Torrent, TorrentState } from '../api/types'
-
-type MobileFilter = 'all' | 'active' | 'downloading' | 'seeding' | 'completed' | 'stalled' | 'metadata' | 'queued'
-
-const FILTER_DEFS: { value: MobileFilter; label: string; states?: Set<TorrentState> }[] = [
-  { value: 'all', label: 'All' },
-  { value: 'active', label: 'Active', states: new Set(['downloading', 'uploading', 'stalledDL', 'stalledUP', 'metaDL', 'forcedDL', 'forcedUP', 'error', 'missingFiles']) },
-  { value: 'downloading', label: 'Downloading', states: new Set(['downloading', 'stalledDL', 'metaDL', 'forcedDL', 'queuedDL']) },
-  { value: 'seeding', label: 'Seeding', states: new Set(['uploading', 'stalledUP', 'forcedUP']) },
-  { value: 'completed', label: 'Completed', states: new Set(['stoppedUP', 'pausedUP', 'queuedUP']) },
-  { value: 'stalled', label: 'Stalled', states: new Set(['stalledDL', 'stalledUP']) },
-  { value: 'metadata', label: 'Metadata', states: new Set(['metaDL']) },
-  { value: 'queued', label: 'Queued', states: new Set(['queuedDL', 'stoppedDL', 'pausedDL']) },
-]
+import { FILTER_DEFS, matchesFilterDef, type FilterId } from '../utils/filterDefs'
+import type { Torrent } from '../api/types'
 
 export function MobileAllPage() {
   const allTorrents = useTorrentStore((s) => s.torrents)
   const categories = useTorrentStore((s) => s.categories)
   const search = useTorrentStore((s) => s.searchQuery)
-  const [filter, setFilter] = useState<MobileFilter>('all')
+  const [filter, setFilter] = useState<FilterId>('all')
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
   const [detailHash, setDetailHash] = useState<string | null>(null)
+  const [showAddDialog, setShowAddDialog] = useState(false)
   const parentRef = useRef<HTMLDivElement>(null)
 
   const torrents = useMemo(() => {
     let list = Object.values(allTorrents)
 
-    // State filter
-    const filterDef = FILTER_DEFS.find((f) => f.value === filter)
-    if (filterDef?.states) {
-      list = list.filter((t) => filterDef.states!.has(t.state))
+    if (filter !== 'all') {
+      list = list.filter((t) => matchesFilterDef(t.state, filter))
     }
-
-    // Category filter
     if (categoryFilter) {
       list = list.filter((t) => t.category === categoryFilter)
     }
-
-    // Search
     if (search) {
       const lower = search.toLowerCase()
       list = list.filter((t) => t.name.toLowerCase().includes(lower))
     }
 
-    // Sort: active first by speed, then alphabetical
     return list.sort((a, b) => {
       if (a.dlspeed !== b.dlspeed) return b.dlspeed - a.dlspeed
       if (a.upspeed !== b.upspeed) return b.upspeed - a.upspeed
@@ -77,15 +61,17 @@ export function MobileAllPage() {
       </div>
 
       {/* State filter chips */}
-      <div className="px-4 pb-2 flex gap-2 overflow-x-auto shrink-0 no-scrollbar">
+      <div className="px-4 pb-2 flex gap-2 overflow-x-auto shrink-0 no-scrollbar" role="tablist" aria-label="Torrent filters">
         {FILTER_DEFS.map((f) => (
           <button
             key={f.value}
+            role="tab"
+            aria-selected={filter === f.value}
             onClick={() => setFilter(f.value)}
             className={clsx(
               'px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all shrink-0',
               filter === f.value
-                ? 'bg-accent-blue/25 text-accent-blue border border-accent-blue/40 shadow-[0_0_12px_oklch(0.7_0.15_240_/_0.2)]'
+                ? 'bg-accent-blue/25 text-accent-blue border border-accent-blue/40'
                 : 'bg-white/5 text-text-secondary border border-white/10 active:bg-white/10',
             )}
           >
@@ -150,7 +136,7 @@ export function MobileAllPage() {
                   <div className="flex items-center gap-2">
                     <ProgressBar progress={t.progress} state={t.state} className="flex-1" />
                     <span className={`text-[10px] font-mono shrink-0 ${stateToColor(t.state)}`}>
-                      {t.dlspeed > 0 ? formatSpeed(t.dlspeed) : stateToLabel(t.state)}
+                      {t.dlspeed > 0 ? formatSpeed(t.dlspeed) : ''}
                     </span>
                   </div>
                 </div>
@@ -160,10 +146,18 @@ export function MobileAllPage() {
         )}
       </div>
 
-      {/* Detail sheet */}
-      {detailHash && (
-        <MobileTorrentDetail hash={detailHash} onClose={() => setDetailHash(null)} />
-      )}
+      {/* FAB: Add torrent */}
+      <button
+        onClick={() => setShowAddDialog(true)}
+        className="fixed bottom-20 right-4 w-14 h-14 rounded-full bg-accent-blue text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform z-40"
+        aria-label="Add torrent"
+        style={{ boxShadow: '0 4px 20px color-mix(in oklch, var(--color-accent-blue) 40%, transparent)' }}
+      >
+        <Plus size={24} />
+      </button>
+
+      {detailHash && <MobileTorrentDetail hash={detailHash} onClose={() => setDetailHash(null)} />}
+      {showAddDialog && <AddTorrentDialog onClose={() => setShowAddDialog(false)} />}
     </div>
   )
 }

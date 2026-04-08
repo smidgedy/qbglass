@@ -7,6 +7,7 @@ import { checkAuth } from './api/auth'
 import { LoginPage } from './components/auth/LoginPage'
 import { DesktopLayout } from './components/layout/DesktopLayout'
 import { MobileLayout } from './components/layout/MobileLayout'
+import { ToastProvider } from './components/shared/Toast'
 
 const ThemeContext = createContext<ReturnType<typeof useTheme> | null>(null)
 export function useThemeContext() {
@@ -44,13 +45,15 @@ export default function App() {
 
   return (
     <ThemeContext.Provider value={themeState}>
-      {!authenticated ? (
-        <LoginPage />
-      ) : (
-        <SyncProvider>
-          {isMobile ? <MobileLayout /> : <DesktopLayout />}
-        </SyncProvider>
-      )}
+      <ToastProvider>
+        {!authenticated ? (
+          <LoginPage />
+        ) : (
+          <SyncProvider>
+            {isMobile ? <MobileLayout /> : <DesktopLayout />}
+          </SyncProvider>
+        )}
+      </ToastProvider>
     </ThemeContext.Provider>
   )
 }

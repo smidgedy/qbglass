@@ -1,7 +1,12 @@
 import { useMemo, useState } from 'react'
 import { ArrowDown, ArrowUp, Activity, Upload, Clock, HardDrive, ChevronUp, Pause, Play } from 'lucide-react'
 import { useTorrentStore } from '../../store/useTorrentStore'
-import { useActiveTorrentCount, useStateCount, SEEDING_STATES, DOWNLOADING_STATES, ACTIVE_STATES } from '../../store/selectors'
+import { useActiveTorrentCount, useStateCount, ACTIVE_STATES } from '../../store/selectors'
+import { FILTER_DEFS } from '../../utils/filterDefs'
+import type { TorrentState } from '../../api/types'
+
+const DOWNLOADING_STATES = FILTER_DEFS.find((f) => f.value === 'downloading')!.states as Set<TorrentState>
+const SEEDING_STATES = FILTER_DEFS.find((f) => f.value === 'seeding')!.states as Set<TorrentState>
 import { formatSpeed, formatSize, formatETA } from '../../utils/format'
 import { GlassCard } from '../shared/GlassCard'
 import { ProgressBar } from '../torrents/ProgressBar'

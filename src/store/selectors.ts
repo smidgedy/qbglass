@@ -1,43 +1,12 @@
 import { useMemo } from 'react'
-import { useTorrentStore, type FilterState, type SortField, type SortDir } from './useTorrentStore'
+import { useTorrentStore, type SortField, type SortDir } from './useTorrentStore'
+import { matchesFilterDef, type FilterId } from '../utils/filterDefs'
 import type { Torrent, TorrentState } from '../api/types'
 
 const ACTIVE_STATES = new Set<TorrentState>([
   'downloading', 'uploading', 'stalledDL', 'stalledUP',
   'metaDL', 'forcedDL', 'forcedUP', 'error', 'missingFiles',
 ])
-
-const DOWNLOADING_STATES = new Set<TorrentState>([
-  'downloading', 'stalledDL', 'metaDL', 'forcedDL', 'queuedDL',
-])
-
-const SEEDING_STATES = new Set<TorrentState>([
-  'uploading', 'stalledUP', 'forcedUP',
-])
-
-const COMPLETED_STATES = new Set<TorrentState>([
-  'stoppedUP', 'pausedUP', 'queuedUP',
-])
-
-const STALLED_STATES = new Set<TorrentState>([
-  'stalledDL', 'stalledUP',
-])
-
-const METADATA_STATES = new Set<TorrentState>([
-  'metaDL',
-])
-
-function matchesFilter(t: Torrent, filter: FilterState): boolean {
-  switch (filter) {
-    case 'active': return ACTIVE_STATES.has(t.state)
-    case 'downloading': return DOWNLOADING_STATES.has(t.state)
-    case 'seeding': return SEEDING_STATES.has(t.state)
-    case 'completed': return COMPLETED_STATES.has(t.state)
-    case 'stalled': return STALLED_STATES.has(t.state)
-    case 'metadata': return METADATA_STATES.has(t.state)
-    case 'all': return true
-  }
-}
 
 function getSortValue(t: Torrent, field: SortField): number | string {
   switch (field) {
@@ -56,7 +25,6 @@ function compareTorrents(a: Torrent, b: Torrent, field: SortField, dir: SortDir)
   const va = getSortValue(a, field)
   const vb = getSortValue(b, field)
 
-  // For ETA sort: items with no ETA (Infinity) always go to the bottom regardless of direction
   if (field === 'eta') {
     const aInf = va === Infinity
     const bInf = vb === Infinity
@@ -84,7 +52,7 @@ export function useFilteredTorrents(): Torrent[] {
     const searchLower = search.toLowerCase()
 
     return list
-      .filter((t) => matchesFilter(t, filter))
+      .filter((t) => matchesFilterDef(t.state, filter as FilterId))
       .filter((t) => !category || t.category === category)
       .filter((t) => !search || t.name.toLowerCase().includes(searchLower))
       .sort((a, b) => compareTorrents(a, b, sortField, sortDir))
@@ -121,4 +89,4 @@ export function useStateCount(states: Set<TorrentState>): number {
   )
 }
 
-export { ACTIVE_STATES, DOWNLOADING_STATES, SEEDING_STATES, COMPLETED_STATES, STALLED_STATES, METADATA_STATES, matchesFilter }
+export { ACTIVE_STATES }
