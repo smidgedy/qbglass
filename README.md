@@ -9,7 +9,6 @@ To be really clear - this is vibe coded with Claude Code. I made it because I li
 <p float="left">
   <img src="screenshots/mobile-overview.png" width="250" />
   <img src="screenshots/mobile-torrents.png" width="250" />
-  <img src="screenshots/mobile-active.png" width="250" />
 </p>
 
 ## Quickstart
