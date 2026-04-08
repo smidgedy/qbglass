@@ -1,14 +1,17 @@
-import { Tv, Film, Music, BookOpen, FolderOpen, Activity, List } from 'lucide-react'
+import { useState } from 'react'
+import { Tv, Film, Music, BookOpen, FolderOpen, Activity, List, Settings } from 'lucide-react'
 import { clsx } from 'clsx'
 import { useTorrentStore, type FilterState } from '../../store/useTorrentStore'
 import { useCategoryCounts, useActiveTorrentCount } from '../../store/selectors'
 import { getCategoryConfig } from '../../utils/categories'
+import { DesktopSettingsDialog } from '../shared/DesktopSettingsDialog'
 
 const iconMap = {
   Tv, Film, Music, BookOpen, FolderOpen,
 } as const
 
 export function Sidebar() {
+  const [showSettings, setShowSettings] = useState(false)
   const categories = useTorrentStore((s) => s.categories)
   const filterState = useTorrentStore((s) => s.filterState)
   const categoryFilter = useTorrentStore((s) => s.categoryFilter)
@@ -78,7 +81,21 @@ export function Sidebar() {
             />
           )
         })}
+
+        {/* Bottom spacer + settings */}
+        <div className="flex-1" />
+        <div className="h-px bg-glass-border my-2" />
+        <SidebarItem
+          icon={<Settings size={16} />}
+          label="Settings"
+          count={0}
+          active={false}
+          onClick={() => setShowSettings(true)}
+          hideCount
+        />
       </div>
+
+      {showSettings && <DesktopSettingsDialog onClose={() => setShowSettings(false)} />}
     </div>
   )
 }
@@ -91,6 +108,7 @@ function SidebarItem({
   active,
   onClick,
   accentCount,
+  hideCount,
 }: {
   icon: React.ReactNode
   label: string
@@ -99,6 +117,7 @@ function SidebarItem({
   active: boolean
   onClick: () => void
   accentCount?: boolean
+  hideCount?: boolean
 }) {
   return (
     <button
@@ -112,12 +131,14 @@ function SidebarItem({
     >
       {icon}
       <span className="flex-1 truncate">{label}</span>
-      <span className={clsx(
-        'text-xs font-mono tabular-nums',
-        accentCount ? 'text-accent-blue' : 'text-text-muted',
-      )}>
-        {count}
-      </span>
+      {!hideCount && (
+        <span className={clsx(
+          'text-xs font-mono tabular-nums',
+          accentCount ? 'text-accent-blue' : 'text-text-muted',
+        )}>
+          {count}
+        </span>
+      )}
       {activeCount !== undefined && activeCount > 0 && (
         <span className="text-[10px] font-mono bg-accent-blue/20 text-accent-blue px-1.5 py-0.5 rounded-full">
           {activeCount}
