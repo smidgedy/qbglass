@@ -16,7 +16,7 @@ export function DesktopLayout() {
       <Sidebar />
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 relative">
         <TopBar />
 
         {/* Toolbar */}
@@ -33,10 +33,14 @@ export function DesktopLayout() {
 
         {/* Torrent list */}
         <TorrentList />
-      </div>
 
-      {/* Detail panel */}
-      {selectedHash && selectionCount === 0 && <TorrentDetail />}
+        {/* Detail panel - overlaid on right */}
+        {selectedHash && selectionCount === 0 && (
+          <div className="absolute top-0 right-0 h-full z-10">
+            <TorrentDetail />
+          </div>
+        )}
+      </div>
     </div>
   )
 }
