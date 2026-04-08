@@ -16,7 +16,7 @@ export function TorrentDetail() {
   return (
     <div
       className="w-96 h-full rounded-none border-l border-glass-border flex flex-col shrink-0 overflow-hidden animate-slide-in-right"
-      style={{ background: 'var(--color-surface-solid)', backdropFilter: 'blur(24px) saturate(1.2)' }}
+      style={{ background: 'color-mix(in oklch, var(--color-surface) 75%, transparent)', backdropFilter: 'blur(24px) saturate(1.2)', WebkitBackdropFilter: 'blur(24px) saturate(1.2)' }}
       role="dialog" aria-label="Torrent details"
     >
       {/* Header */}
