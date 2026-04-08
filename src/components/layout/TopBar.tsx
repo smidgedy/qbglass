@@ -25,7 +25,7 @@ export function TopBar() {
         {/* Download speed + sparkline */}
         <div className="flex items-center gap-2">
           <ArrowDown size={16} className="text-accent-blue" />
-          <Sparkline data={dlHistory} width={80} height={28} color="oklch(0.7 0.15 240)" />
+          <Sparkline data={dlHistory} width={80} height={28} color="var(--color-accent-blue)" />
           <span className="font-mono text-sm font-semibold text-accent-blue">
             {formatSpeed(serverState.dl_info_speed)}
           </span>
@@ -34,7 +34,7 @@ export function TopBar() {
         {/* Upload speed + sparkline */}
         <div className="flex items-center gap-2">
           <ArrowUp size={16} className="text-accent-green" />
-          <Sparkline data={ulHistory} width={80} height={28} color="oklch(0.7 0.15 150)" />
+          <Sparkline data={ulHistory} width={80} height={28} color="var(--color-accent-green)" />
           <span className="font-mono text-sm font-semibold text-accent-green">
             {formatSpeed(serverState.up_info_speed)}
           </span>

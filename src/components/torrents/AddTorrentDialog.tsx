@@ -54,9 +54,9 @@ export function AddTorrentDialog({ onClose }: AddTorrentDialogProps) {
       <div
         className="rounded-2xl border border-accent-blue/20 p-6 w-full max-w-md relative z-10 flex flex-col gap-4"
         style={{
-          background: 'oklch(0.12 0.015 260 / 0.97)',
+          background: 'var(--color-surface-solid)',
           backdropFilter: 'blur(24px) saturate(1.2)',
-          boxShadow: '0 8px 48px oklch(0 0 0 / 0.6), 0 0 40px oklch(0.7 0.15 240 / 0.12), inset 0 1px 0 oklch(1 0 0 / 0.05)',
+          boxShadow: '0 8px 48px oklch(0 0 0 / 0.6), 0 0 40px color-mix(in oklch, var(--color-accent-blue) 12%, transparent), inset 0 1px 0 oklch(1 0 0 / 0.05)',
         }}
         onClick={(e) => e.stopPropagation()}
       >

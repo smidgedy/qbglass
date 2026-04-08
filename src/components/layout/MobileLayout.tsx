@@ -26,7 +26,7 @@ export function MobileLayout() {
 
       {/* Bottom nav */}
       <nav className="h-16 flex items-center shrink-0 border-t border-glass-border"
-           style={{ background: 'oklch(0.10 0.015 260 / 0.95)', backdropFilter: 'blur(20px)' }}>
+           style={{ background: 'var(--color-surface-nav)', backdropFilter: 'blur(20px)' }}>
         {tabs.map((t) => (
           <button
             key={t.value}

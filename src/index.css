@@ -7,6 +7,8 @@
 
   --color-surface: oklch(0.08 0.01 260);
   --color-surface-raised: oklch(0.12 0.01 260 / 0.8);
+  --color-surface-solid: oklch(0.12 0.015 260 / 0.97);
+  --color-surface-nav: oklch(0.10 0.015 260 / 0.95);
 
   --color-accent-blue: oklch(0.7 0.15 240);
   --color-accent-green: oklch(0.7 0.15 150);
@@ -26,6 +28,10 @@
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', ui-monospace, monospace;
 }
 
+:root {
+  --bg-glow: oklch(0.2 0.08 240 / 0.15);
+}
+
 body {
   margin: 0;
   background: linear-gradient(135deg, oklch(0.06 0.02 280), oklch(0.04 0.01 220));
@@ -38,11 +44,9 @@ body {
 body::before {
   content: '';
   position: fixed;
-  top: -20%;
-  left: -10%;
-  width: 60%;
-  height: 60%;
-  background: radial-gradient(circle, oklch(0.2 0.08 240 / 0.15), transparent 70%);
+  top: -20%; left: -10%;
+  width: 60%; height: 60%;
+  background: radial-gradient(circle, var(--bg-glow), transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -54,15 +58,14 @@ body::before {
   height: 100dvh;
 }
 
+/* Glass utilities */
 @utility glass-panel {
   background: var(--color-glass-bg);
   backdrop-filter: blur(20px) saturate(1.2);
   -webkit-backdrop-filter: blur(20px) saturate(1.2);
   border: 1px solid var(--color-glass-border);
   border-radius: 1rem;
-  box-shadow:
-    0 8px 32px oklch(0 0 0 / 0.3),
-    inset 0 1px 0 oklch(1 0 0 / 0.05);
+  box-shadow: 0 8px 32px oklch(0 0 0 / 0.3), inset 0 1px 0 oklch(1 0 0 / 0.05);
 }
 
 @utility glass-panel-flat {
@@ -70,32 +73,14 @@ body::before {
   backdrop-filter: blur(20px) saturate(1.2);
   -webkit-backdrop-filter: blur(20px) saturate(1.2);
   border: 1px solid var(--color-glass-border);
-  box-shadow:
-    0 8px 32px oklch(0 0 0 / 0.3),
-    inset 0 1px 0 oklch(1 0 0 / 0.05);
+  box-shadow: 0 8px 32px oklch(0 0 0 / 0.3), inset 0 1px 0 oklch(1 0 0 / 0.05);
 }
 
 @utility glass-glow-blue {
-  box-shadow:
-    0 8px 32px oklch(0 0 0 / 0.3),
-    0 0 20px oklch(0.7 0.15 240 / 0.15),
-    inset 0 1px 0 oklch(1 0 0 / 0.05);
+  box-shadow: 0 8px 32px oklch(0 0 0 / 0.3), 0 0 20px var(--color-accent-blue, oklch(0.7 0.15 240)) / 0.15, inset 0 1px 0 oklch(1 0 0 / 0.05);
 }
 
-@utility glass-glow-green {
-  box-shadow:
-    0 8px 32px oklch(0 0 0 / 0.3),
-    0 0 20px oklch(0.7 0.15 150 / 0.15),
-    inset 0 1px 0 oklch(1 0 0 / 0.05);
-}
-
-@utility glass-glow-red {
-  box-shadow:
-    0 8px 32px oklch(0 0 0 / 0.3),
-    0 0 20px oklch(0.65 0.2 25 / 0.15),
-    inset 0 1px 0 oklch(1 0 0 / 0.05);
-}
-
+/* Animations */
 @keyframes shimmer {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
@@ -106,32 +91,20 @@ body::before {
   to { transform: translateY(0); }
 }
 
-.animate-slide-up {
-  animation: slide-up 0.25s ease-out;
-}
+.animate-slide-up { animation: slide-up 0.25s ease-out; }
 
+/* Focus */
 *:focus-visible {
-  outline: 2px solid oklch(0.7 0.15 240 / 0.6);
+  outline: 2px solid color-mix(in oklch, var(--color-accent-blue) 60%, transparent);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
+/* Scrollbar */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: oklch(0.35 0 0 / 0.5);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: oklch(0.45 0 0 / 0.6);
-}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: oklch(0.35 0 0 / 0.5); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: oklch(0.45 0 0 / 0.6); }

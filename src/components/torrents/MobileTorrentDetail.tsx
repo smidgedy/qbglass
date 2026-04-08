@@ -48,7 +48,7 @@ export function MobileTorrentDetail({ hash, onClose }: MobileTorrentDetailProps)
       {/* Sheet */}
       <div
         className="rounded-t-2xl border border-glass-border border-b-0 max-h-[85vh] flex flex-col animate-slide-up"
-        style={{ background: 'oklch(0.12 0.015 260 / 0.97)', backdropFilter: 'blur(20px) saturate(1.2)' }}
+        style={{ background: 'var(--color-surface-solid)', backdropFilter: 'blur(20px) saturate(1.2)' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Handle */}
