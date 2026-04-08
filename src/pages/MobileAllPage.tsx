@@ -1,8 +1,8 @@
 import { useRef, useMemo, useState } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import { Plus } from 'lucide-react'
+import { Plus, ArrowUpDown } from 'lucide-react'
 import { clsx } from 'clsx'
-import { useTorrentStore } from '../store/useTorrentStore'
+import { useTorrentStore, type SortField, type SortDir } from '../store/useTorrentStore'
 import { ProgressBar } from '../components/torrents/ProgressBar'
 import { CategoryBadge } from '../components/torrents/CategoryBadge'
 import { MobileTorrentDetail } from '../components/torrents/MobileTorrentDetail'
@@ -14,6 +14,32 @@ import { getCategoryConfig } from '../utils/categories'
 import { FILTER_DEFS, matchesFilterDef, type FilterId } from '../utils/filterDefs'
 import type { Torrent } from '../api/types'
 
+const SORT_OPTIONS: { field: SortField; label: string }[] = [
+  { field: 'name', label: 'Name' },
+  { field: 'size', label: 'Size' },
+  { field: 'progress', label: 'Progress' },
+  { field: 'speed', label: 'Speed' },
+  { field: 'eta', label: 'ETA' },
+  { field: 'priority', label: 'Queue' },
+  { field: 'ratio', label: 'Ratio' },
+  { field: 'added', label: 'Added' },
+  { field: 'state', label: 'State' },
+]
+
+function getSortValue(t: Torrent, field: SortField): number | string {
+  switch (field) {
+    case 'name': return t.name.toLowerCase()
+    case 'size': return t.size
+    case 'progress': return t.progress
+    case 'speed': return t.dlspeed + t.upspeed
+    case 'eta': return (t.eta <= 0 || t.eta >= 8640000) ? Infinity : t.eta
+    case 'ratio': return t.ratio
+    case 'added': return t.added_on
+    case 'state': return t.state
+    case 'priority': return t.priority
+  }
+}
+
 export function MobileAllPage() {
   const allTorrents = useTorrentStore((s) => s.torrents)
   const categories = useTorrentStore((s) => s.categories)
@@ -22,7 +48,20 @@ export function MobileAllPage() {
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
   const [detailHash, setDetailHash] = useState<string | null>(null)
   const [showAddDialog, setShowAddDialog] = useState(false)
+  const [sortField, setSortField] = useState<SortField>('name')
+  const [sortDir, setSortDir] = useState<SortDir>('asc')
+  const [showSortMenu, setShowSortMenu] = useState(false)
   const parentRef = useRef<HTMLDivElement>(null)
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDir(sortDir === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortField(field)
+      setSortDir('asc')
+    }
+    setShowSortMenu(false)
+  }
 
   const torrents = useMemo(() => {
     let list = Object.values(allTorrents)
@@ -39,11 +78,23 @@ export function MobileAllPage() {
     }
 
     return list.sort((a, b) => {
-      if (a.dlspeed !== b.dlspeed) return b.dlspeed - a.dlspeed
-      if (a.upspeed !== b.upspeed) return b.upspeed - a.upspeed
-      return a.name.localeCompare(b.name)
+      const va = getSortValue(a, sortField)
+      const vb = getSortValue(b, sortField)
+
+      if (sortField === 'eta') {
+        const aInf = va === Infinity
+        const bInf = vb === Infinity
+        if (aInf && !bInf) return 1
+        if (!aInf && bInf) return -1
+        if (aInf && bInf) return 0
+      }
+
+      let cmp = 0
+      if (typeof va === 'string' && typeof vb === 'string') cmp = va.localeCompare(vb)
+      else if (typeof va === 'number' && typeof vb === 'number') cmp = va - vb
+      return sortDir === 'desc' ? -cmp : cmp
     })
-  }, [allTorrents, filter, categoryFilter, search]) as Torrent[]
+  }, [allTorrents, filter, categoryFilter, search, sortField, sortDir]) as Torrent[]
 
   const virtualizer = useVirtualizer({
     count: torrents.length,
@@ -104,9 +155,43 @@ export function MobileAllPage() {
         </div>
       )}
 
-      {/* Count */}
-      <div className="px-4 py-1.5 text-[10px] text-text-muted uppercase tracking-wider shrink-0">
-        {torrents.length} torrent{torrents.length !== 1 && 's'}
+      {/* Count + Sort */}
+      <div className="px-4 py-1.5 flex items-center gap-2 shrink-0 relative">
+        <span className="text-[10px] text-text-muted uppercase tracking-wider flex-1">
+          {torrents.length} torrent{torrents.length !== 1 && 's'}
+        </span>
+        <button
+          onClick={() => setShowSortMenu(!showSortMenu)}
+          className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium text-text-secondary bg-white/5 border border-white/10 active:bg-white/10 transition-all"
+        >
+          <ArrowUpDown size={12} />
+          {SORT_OPTIONS.find((o) => o.field === sortField)?.label}
+          <span className="text-text-muted">{sortDir === 'asc' ? '\u2191' : '\u2193'}</span>
+        </button>
+        {showSortMenu && (
+          <>
+            <div className="fixed inset-0 z-40" onClick={() => setShowSortMenu(false)} />
+            <div className="absolute right-4 top-full mt-1 z-50 bg-surface-card border border-glass-border rounded-xl shadow-lg overflow-hidden min-w-[140px]">
+              {SORT_OPTIONS.map((o) => (
+                <button
+                  key={o.field}
+                  onClick={() => handleSort(o.field)}
+                  className={clsx(
+                    'w-full px-3 py-2.5 text-xs font-medium text-left transition-colors flex items-center justify-between',
+                    sortField === o.field
+                      ? 'bg-accent-blue/15 text-accent-blue'
+                      : 'text-text-secondary active:bg-white/10',
+                  )}
+                >
+                  {o.label}
+                  {sortField === o.field && (
+                    <span className="text-[10px]">{sortDir === 'asc' ? '\u2191' : '\u2193'}</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Virtual list */}
