@@ -1,0 +1,49 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci --legacy-peer-deps
+      - run: npm run build
+
+      - name: Generate version
+        id: version
+        run: |
+          # Auto-version: YYYY.MM.DD-<short sha>
+          VERSION="$(date -u +%Y.%m.%d)-$(git rev-parse --short HEAD)"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Package release
+        run: |
+          mkdir -p qbglass/public
+          cp -r dist/* qbglass/public/
+          cd qbglass && zip -r ../qbglass-${{ steps.version.outputs.version }}.zip .
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: QBGlass ${{ steps.version.outputs.version }}
+          files: qbglass-${{ steps.version.outputs.version }}.zip
+          make_latest: true
+          body: |
+            Built from `${{ github.sha }}`.
+
+            **Install:** Download the zip, extract to a folder, and set qBittorrent's Alternative WebUI path to that folder.
