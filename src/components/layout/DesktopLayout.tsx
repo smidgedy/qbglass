@@ -8,7 +8,6 @@ import { SearchBar } from '../shared/SearchBar'
 import { useTorrentStore } from '../../store/useTorrentStore'
 
 export function DesktopLayout() {
-  const selectedHash = useTorrentStore((s) => s.selectedHash)
   const selectionCount = useTorrentStore((s) => Object.keys(s.selectedHashes).length)
 
   return (
@@ -35,11 +34,9 @@ export function DesktopLayout() {
         <TorrentList />
 
         {/* Detail panel - overlaid on right */}
-        {selectedHash && selectionCount === 0 && (
-          <div className="absolute top-0 right-0 h-full z-10">
-            <TorrentDetail />
-          </div>
-        )}
+        <div className="absolute top-0 right-0 h-full z-10">
+          <TorrentDetail />
+        </div>
       </div>
     </div>
   )
