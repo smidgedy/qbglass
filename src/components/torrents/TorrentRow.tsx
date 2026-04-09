@@ -104,13 +104,16 @@ export function TorrentRow({ torrent, style }: TorrentRowProps) {
         </div>
       </div>
 
-      {/* ETA */}
+      {/* ETA + Seeds/Peers */}
       <div className="w-16 text-right shrink-0">
         {isDownloading(t.state) && t.eta > 0 && t.eta < 8640000 ? (
           <div className="text-xs font-mono text-text-secondary tabular-nums">{formatETA(t.eta)}</div>
         ) : (
           <div className="text-xs font-mono text-text-muted">&mdash;</div>
         )}
+        <div className="text-[10px] font-mono text-text-muted mt-0.5 tabular-nums">
+          {t.num_seeds}s · {t.num_leechs}p
+        </div>
       </div>
     </div>
   )
